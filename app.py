@@ -2,7 +2,7 @@ from functools import wraps
 import uuid
 from datetime import datetime
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 from bson import ObjectId
 from pymongo import Connection, GEO2D
