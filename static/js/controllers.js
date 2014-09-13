@@ -23,7 +23,6 @@ module.controller('RegisterController', ["$scope", "$http", "$window", "$locatio
                 .post("/register", $scope.user)
                 .success(function (data) {
                     $window.sessionStorage.token = data.token;
-                    console.log('session set');
                     $location.path("/")
                });
         };
@@ -31,5 +30,5 @@ module.controller('RegisterController', ["$scope", "$http", "$window", "$locatio
 
 module.controller('RidesController', ["$scope", "$http", "$window", "$location",
     function ($scope, $http, $window, $location) {
-        $http.get("/rides")
+        //$scope.user = $window.localStorage.user;
 }]);

@@ -95,3 +95,66 @@ form .error {
     padding: 20px 10px;
     margin-top: -10px;
 }
+
+.ride-creation h3 {
+    font-weight: normal;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    font-size: 25px;
+}
+
+.ride-creation .profile-image {
+    text-align: center;
+}
+
+.ride-creation .profile-image img {
+    background-color: #e8e9ea;
+    padding: 8px;
+    border: 3px solid #289d56;
+    border-radius: 50%;
+}
+
+.ride-creation .stats {
+    overflow: hidden;
+}
+
+.ride-creation .stats .left {
+    width: 50%;
+    float: left;
+    border-right: 2px solid #289d56;
+    height: 200px;
+}
+
+.ride-creation .summary {
+    text-align: center;
+    padding: 15px;
+    font-size: 20px;
+    width: 300px;
+    margin: auto;
+}
+
+.ride-creation .actions {
+    font-size: 20px;
+    width: 350px;
+    margin: auto;
+}
+
+.ride-creation a {
+    padding: 20px;
+    float: left;
+    background-color: #289d56;
+    color: white;
+    display: block;
+    width: 120px;
+    text-align: center;
+    text-decoration: none;
+    border: 2px solid #289d56;
+}
+
+.ride-creation .ride {
+    margin-left: 20px;
+    color: #e67e22;
+    background-color: #e8e9ea;
+    border: 2px solid #e67e22;
+}

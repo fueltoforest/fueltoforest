@@ -68,7 +68,19 @@ def login():
 
     assert_if(user, "email or password wrong")
 
-    return jsonify({'email': email, 'token': user['token']})
+    return jsonify(user)
+
+
+@app.route('/authenticate', methods=['POST'])
+def authenticate():
+    token = request.json.get("token")
+
+    user = db.users.find_one({"token": token})
+
+    if not user:
+        abort(401)
+
+    return jsonify(user)
 
 
 def require_user(fn):
@@ -81,7 +93,7 @@ def require_user(fn):
 
         if not token:
             token = request.headers.get("token")
-        user = db.users.find_one(dict(token=token))
+        user = db.users.find_one({"token": token})
         if not user:
             abort(401)
         return fn(user, *args, **kwargs)

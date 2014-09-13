@@ -49,3 +49,11 @@ module.factory('authInterceptor', function ($rootScope, $q, $window, $location) 
 module.config(function ($httpProvider) {
     $httpProvider.interceptors.push('authInterceptor');
 });
+
+module.run(['$rootScope', '$window', '$http', function($rootScope, $window, $http) {
+    $http.post("/authenticate", {
+        "token": $window.sessionStorage.token
+    }).success(function (data) {
+        $rootScope.user = data;
+    })
+}]);
