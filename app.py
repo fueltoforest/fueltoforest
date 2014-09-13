@@ -1,5 +1,7 @@
 from functools import wraps
 import uuid
+from geopy import distance, Point
+
 from datetime import datetime
 
 from flask import Flask, jsonify, request, render_template
@@ -133,7 +135,41 @@ def heartbeat(user, id):
     response.status_code = 200
     return response
 
+def calc_ride_distance(ride_id):
+    locs = db.ride_routes.find({'ride_id': ride_id}).sort('created_at', -1)
+    last_p = None
+    dis = 0
+    for loc in locs:
+        print "loc::::", loc
+        lon, lat = loc['current_location']
+        p = Point(latitude=lat, longitude=lon)
+        if last_p:
+            print ">>>>", dis
+            dis += distance.distance(last_p, p).km
+        last_p = p
+    return dis
 
+
+def calc_donate(kms):
+    """
+    TODO: tamamen scientific user behaviour driven calculation yapiyoruz,
+
+    km basina 10 kurus, sonra TL ye ceviriyoruz,
+    30 km ~ 3 lira yapiyor
+    60 km ~ 7 lira yapiyor (exponantial olarak artiyor,
+                            km arttikca bagis oranin fazlalasiyor ki araci daha az kullanmak isteyesin)
+    >>> calc_donate(30)
+    3.0
+    >>> calc_donate(60)
+    7.0
+    >>> calc_donate(90)
+    10.0
+    """
+    kms = (kms * 1.1)
+    r =  (kms * 10) / 100
+    if r < 1:
+        return 1
+    return round(r)
 
 @app.route("/rides/<id>/finish", methods=['POST'])
 @require_user
@@ -151,10 +187,16 @@ def finish_ride(user, id):
     assert ride
     assert ride['user_id'] == user_id
 
+    db.ride_routes.insert({'current_location': location, 'created_at': datetime.utcnow(),
+                           'ride_id': id})
     db.rides.update({'_id': ObjectId(id)}, {'$set':{'end_location': location, 'status': 'finished'}})
 
+    dis = calc_ride_distance(ride_id=id)
+
     response = jsonify({
-        "ride_id": str(id)
+        "ride_id": str(id),
+        "distance": dis,
+        "donate": calc_donate(kms=dis)
     })
     response.status_code = 200
     return response

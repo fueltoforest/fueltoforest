@@ -40,11 +40,15 @@ post('/rides/%s/heartbeat' % ride['ride_id'], {
     'location': [29.0021, 41.0441]
 }, status_code=200)
 
-post('/rides/%s/finish' % ride['ride_id'], {
+post('/rides/%s/heartbeat' % ride['ride_id'], {
     'token': user['token'],
-    'location': [29.0022, 41.0442]
+    'location': [29.0032, 41.0441]
 }, status_code=200)
 
+c = post('/rides/%s/finish' % ride['ride_id'], {
+    'token': user['token'],
+    'location': [29.3143, 41.1442]
+}, status_code=200)
 
-
+print c.content
 
