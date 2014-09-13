@@ -3,9 +3,9 @@
 </header>
 
 
-<form action="#/login" id="login-form" method="post">
-    <input id="email" name="email" type="email" placeholder="E-mail" />
-    <input id="password" name="password" type="password" placeholder="Password" />
+<form action="" id="login-form" method="post" ng-submit="login()">
+    <input id="email" name="email" type="email" placeholder="E-mail" ng-model="email" />
+    <input id="password" name="password" type="password" placeholder="Şifre" ng-model="password" />
     <input id="submit" type="submit" value="GİRİŞ" />
 
     <div class="register-text">

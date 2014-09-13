@@ -1,15 +1,13 @@
-from functools import wraps
 import uuid
-from geopy import distance, Point
-
+from functools import wraps
 from datetime import datetime
 
-from flask import Flask, jsonify, request, render_template
-
+from flask import Flask, request, render_template, abort
+from geopy import distance, Point
 from bson import ObjectId
 from pymongo import Connection, GEO2D
 
-from utils import assert_if, sha1_string, force_utf8, InvalidUsage
+from utils import assert_if, sha1_string, force_utf8, InvalidUsage, jsonify
 
 
 app = Flask(__name__)
@@ -29,56 +27,48 @@ def app_index():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
-    user_name = data.get('user_name')
+    name = data.get('name')
     password = data.get('password')
     email = data.get('email')
-    assert_if(user_name and len(user_name) > 3 and len(user_name) < 20, "username len >= 4 and < 20 ")
     assert_if(password and len(password) >= 5 and len(password) < 20, "password len > 5 and < 20 ")
     assert_if(email and len(email) >= 3 and len(email) < 50 and '@' in email, "email needed ")
 
     # check unique
-    assert_if(not db.users.find_one(dict(user_name=user_name)), "username not unique")
     assert_if(not db.users.find_one(dict(email=email)), "email not unique")
 
     hashed_password = sha1_string(force_utf8(password) + "users")
 
     token = sha1_string(str(uuid.uuid4()))
 
-    user = db.users.insert(dict(
-        user_name = user_name,
-        email = email,
-        password = hashed_password,
-        token = token
-    ))
+    bundle = {
+        'name': name,
+        'email': email,
+        'password': hashed_password,
+        'token': token
+    }
 
-    return jsonify(user_name=user_name, token=token)
+    db.users.insert(bundle)
+    return jsonify(bundle)
 
 
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
     password = data.get('password')
-    user_name = data.get('user_name')
-    assert_if(user_name, 'username needed')
+    email = data.get('email')
+    assert_if(email, 'email needed')
     assert_if(password, 'password needed')
 
     hashed_password = sha1_string(force_utf8(password) + "users")
 
     user = db.users.find_one(dict(
-        user_name = user_name,
-        password = hashed_password
+        email=email,
+        password=hashed_password
     ))
 
-    assert_if(user, "password or user_name wrong")
+    assert_if(user, "email or password wrong")
 
-    return jsonify(user_name=user_name, token=user['token'])
-
-
-@app.route("/rides", methods=['GET'])
-def get_rides():
-    return jsonify({
-        "objects": []
-    })
+    return jsonify({'email': email, 'token': user['token']})
 
 
 def require_user(fn):
@@ -89,11 +79,19 @@ def require_user(fn):
         except:
             token = request.args.get('token')
 
-        assert_if(token, 'token needed for this action')
+        if not token:
+            token = request.headers.get("token")
         user = db.users.find_one(dict(token=token))
-        assert_if(user, "token is wrong")
+        if not user:
+            abort(401)
         return fn(user, *args, **kwargs)
     return inner
+
+@app.route("/rides", methods=['GET'])
+@require_user
+def get_rides(user):
+    result = db.rides.find()
+    return jsonify(result)
 
 @app.route("/rides", methods=['POST'])
 @require_user

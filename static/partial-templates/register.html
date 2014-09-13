@@ -3,7 +3,14 @@
 </header>
 
 
-<form action="/login" id="login-form" method="post">
-    recistır
+<form action="" id="login-form" method="post" ng-submit="register()">
+    <input id="email" name="email" type="email" placeholder="E-mail" ng-model="user.email" />
+    <input id="name" name="name" type="text" placeholder="Ad Soyad" ng-model="user.name" />
+    <input id="password" name="password" type="password" placeholder="Şifre" ng-model="user.password" />
+    <input id="password2" name="password2" type="password" placeholder="Şifre (Tekrar)"
+           ng-model="user.password2"
+           ng-blur="passwordDontMatch = (user.password != user.password2)" />
+    <div class="error" ng-show="passwordDontMatch">Girdiğiniz şifreler uyuşmuyor.</div>
+    <input id="submit" type="submit" value="KAYIT OL" />
 
 </form>
