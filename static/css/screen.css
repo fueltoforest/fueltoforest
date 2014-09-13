@@ -6,9 +6,83 @@
 body {
     margin: 0;
     padding: 0;
+    background-color: #e8e9ea;
 }
 
 header {
     margin-top: 0;
     overflow: hidden;
+    text-align: center;
+    padding: 20px;
+}
+
+form {
+    margin: 0;
+    padding: 0;
+}
+
+#login-form #email,
+#login-form #password {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #bbbbbb;
+    color: #919191;
+    outline: none;
+    width: 100%;
+    font-size: 20px;
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+#login-form #submit {
+    box-sizing: content-box;
+    width: 100%;
+    background-color: #289d56;
+    color: white;
+    border: none;
+    display: inline-block;
+    font-size: 20px;
+    padding: 20px 10px;
+    outline: none;
+    margin-bottom: 40px;
+}
+
+#login-form #submit:focus {
+    background-color: #238649;
+}
+
+.register-text {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 0 10px;
+    box-sizing: content-box;
+    width: 100%;
+    border-bottom: 1px solid #c5c5c5;
+    height: 25px;
+}
+
+.register-text span {
+    color: #acacac;
+    font-size: 30px;
+    width: 300px;
+    background-color: #e8e9ea;
+    position: absolute;
+    margin-left: -150px;
+    left: 50%;
+    padding: 3px 6px;
+    text-align: center;
+}
+
+.register-button {
+    color: #ea5b0c;
+    font-size: 20px;
+    text-decoration: none;
+    border: 2px solid #ea5b0c;
+    width: 100%;
+    padding: 20px 10px;
+    margin-top: 70px;
+    display: block;
+    text-align: center;
+    margin-bottom: 90px;
+    box-sizing: content-box;
 }

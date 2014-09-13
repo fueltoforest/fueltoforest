@@ -18,6 +18,12 @@ db = Connection()["fueltoforest"]
 def index():
     return render_template('index.html')
 
+
+@app.route('/app')
+def app_index():
+    return render_template('app.html')
+
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
