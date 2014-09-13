@@ -137,17 +137,22 @@ def heartbeat(user, id):
 
 def calc_ride_distance(ride_id):
     locs = db.ride_routes.find({'ride_id': ride_id}).sort('created_at', -1)
-    last_p = None
+    last_loc = None
     dis = 0
+    t = 0
     for loc in locs:
         print "loc::::", loc
         lon, lat = loc['current_location']
         p = Point(latitude=lat, longitude=lon)
-        if last_p:
+        loc['p'] = p
+        if last_loc:
             print ">>>>", dis
-            dis += distance.distance(last_p, p).km
-        last_p = p
-    return dis
+            dis += distance.distance(last_loc['p'], p).km
+            seconds = abs((loc['created_at'] - last_loc['created_at']).total_seconds())
+            if seconds < 3600: # prolly he just forgot clicking stop
+                t += seconds
+        last_loc = loc
+    return {'dis': dis, 't': t}
 
 
 def calc_donate(kms):
@@ -164,7 +169,7 @@ def calc_donate(kms):
     7.0
     >>> calc_donate(90)
     10.0
-    
+
     """
     kms = (kms * 1.1)
     r =  (kms * 10) / 100
@@ -192,12 +197,13 @@ def finish_ride(user, id):
                            'ride_id': id})
     db.rides.update({'_id': ObjectId(id)}, {'$set':{'end_location': location, 'status': 'finished'}})
 
-    dis = calc_ride_distance(ride_id=id)
+    d = calc_ride_distance(ride_id=id)
 
     response = jsonify({
         "ride_id": str(id),
-        "distance": dis,
-        "donate": calc_donate(kms=dis)
+        "distance": d['dis'],
+        'elapsed_seconds': d['t'],
+        "donate": calc_donate(kms=d['dis'])
     })
     response.status_code = 200
     return response

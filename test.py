@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 from pymongo import Connection
 
 SERVER_URL = 'http://localhost:9910'
@@ -39,6 +40,8 @@ post('/rides/%s/heartbeat' % ride['ride_id'], {
     'token': user['token'],
     'location': [29.0021, 41.0441]
 }, status_code=200)
+
+time.sleep(2)
 
 post('/rides/%s/heartbeat' % ride['ride_id'], {
     'token': user['token'],
