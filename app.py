@@ -164,6 +164,7 @@ def calc_donate(kms):
     7.0
     >>> calc_donate(90)
     10.0
+    
     """
     kms = (kms * 1.1)
     r =  (kms * 10) / 100
