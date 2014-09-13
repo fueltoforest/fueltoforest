@@ -1,6 +1,7 @@
 var module = angular.module('fuelToForestApp', [
     'ngRoute',
-    'fuelToForestControllers'
+    'fuelToForestControllers',
+    'geolocation',
 ]);
 
 
@@ -18,6 +19,10 @@ module.config(['$routeProvider',
             when('/register', {
                 templateUrl: '/static/partial-templates/register.html',
                 controller: 'RegisterController'
+            }).
+            when('/heartbeat', {
+                templateUrl: '/static/partial-templates/heartbeat.html',
+                controller: 'HeartbeatController'
             }).
             otherwise({
                 redirectTo: '/'

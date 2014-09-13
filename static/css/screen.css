@@ -158,3 +158,51 @@ form .error {
     background-color: #e8e9ea;
     border: 2px solid #e67e22;
 }
+
+
+.heartbeat .kilometer {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 3px solid silver;
+    text-align: center;
+    left: 50%;
+    position: absolute;
+    margin-left: -100px;
+    margin-top: 50px;
+}
+
+.heartbeat .kilometer span {
+    display: block;
+    color: gray;
+    padding: 40px 20px 0;
+    text-align: center;
+    font-size: 20px;
+}
+
+.heartbeat .kilometer i {
+    font-style: normal;
+    color: #289d56;
+    font-size: 70px;
+}
+
+.heartbeat .kilometer b {
+    color: #289d56;
+    font-size: 30px;
+}
+
+.heartbeat .finish-action a {
+    color: white;
+    background-color: #e74c3c;
+    border-radius: 50%;
+    display: block;
+    width: 100px;
+    text-align: center;
+    height: 60px;
+    padding-top: 40px;
+    text-decoration: none;
+    position: absolute;
+    top: 400px;
+    left: 50%;
+    margin-left: -50px;
+}
