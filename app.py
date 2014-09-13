@@ -75,7 +75,7 @@ def get_rides():
 
 def require_user(fn):
     @wraps(fn)
-    def inner():
+    def inner(*args, **kwargs):
         try:
             token = request.json['token']
         except:
@@ -84,9 +84,8 @@ def require_user(fn):
         assert_if(token, 'token needed for this action')
         user = db.users.find_one(dict(token=token))
         assert_if(user, "token is wrong")
-        return fn(user)
+        return fn(user, *args, **kwargs)
     return inner
-
 
 @app.route("/rides", methods=['POST'])
 @require_user
@@ -94,12 +93,13 @@ def post_rides(user):
     data = request.json
     user_id = user['_id']
     location = data.get("location")
-    inserted_id = db.requests.insert({
+    inserted_id = db.rides.insert({
         "date_created": datetime.utcnow(),
         "user_id": user_id,
-        "start_location": location
+        "start_location": location,
+        'status': 'started'
     })
-    db.places.ensure_index([("location", GEO2D)])
+    db.rides.ensure_index([("start_location", GEO2D)])
     response = jsonify({
         "ride_id": str(inserted_id)
     })
@@ -109,18 +109,55 @@ def post_rides(user):
 
 @app.route("/rides/<id>/heartbeat", methods=['POST'])
 @require_user
-def heartbeat(ride_id):
+def heartbeat(user, id):
     """
     Handles users current location
     """
+    data = request.json
+    user_id = user['_id']
+    location = data.get("location")
+    db.rides.ensure_index([("current_location", GEO2D)])
+    db.ride_routes.ensure_index([("current_location", GEO2D)])
+
+    ride = db.rides.find_one({'_id': ObjectId(id)})
+    assert ride
+    assert ride['user_id'] == user_id
+
+    db.rides.update({'_id': ObjectId(id)}, {'$set':{'current_location': location, 'last_update': datetime.utcnow()}})
+    db.ride_routes.insert({'current_location': location, 'created_at': datetime.utcnow(),
+                           'ride_id': id})
+
+    response = jsonify({
+        "ride_id": str(id)
+    })
+    response.status_code = 200
+    return response
+
 
 
 @app.route("/rides/<id>/finish", methods=['POST'])
 @require_user
-def finish_ride(ride_id):
+def finish_ride(user, id):
     """
     Finishes the ride
     """
+    data = request.json
+    user_id = user['_id']
+    location = data.get("location")
+    db.rides.ensure_index([("current_location", GEO2D)])
+    db.ride_routes.ensure_index([("current_location", GEO2D)])
+
+    ride = db.rides.find_one({'_id': ObjectId(id)})
+    assert ride
+    assert ride['user_id'] == user_id
+
+    db.rides.update({'_id': ObjectId(id)}, {'$set':{'end_location': location, 'status': 'finished'}})
+
+    response = jsonify({
+        "ride_id": str(id)
+    })
+    response.status_code = 200
+    return response
 
 
 @app.errorhandler(InvalidUsage)
