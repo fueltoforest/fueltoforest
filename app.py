@@ -33,7 +33,9 @@ def register():
     assert_if(not db.users.find_one(dict(email=email)), "email not unique")
 
     hashed_password = sha1_string(force_utf8(password) + "users")
+
     token = sha1_string(str(uuid.uuid4()))
+
     user = db.users.insert(dict(
         user_name = user_name,
         email = email,
@@ -103,6 +105,22 @@ def post_rides(user):
     })
     response.status_code = 201
     return response
+
+
+@app.route("/rides/<id>/heartbeat", methods=['POST'])
+@require_user
+def heartbeat(ride_id):
+    """
+    Handles users current location
+    """
+
+
+@app.route("/rides/<id>/finish", methods=['POST'])
+@require_user
+def finish_ride(ride_id):
+    """
+    Finishes the ride
+    """
 
 
 @app.errorhandler(InvalidUsage)
