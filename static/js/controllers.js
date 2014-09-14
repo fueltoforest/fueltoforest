@@ -43,7 +43,7 @@ module.controller('HeartbeatController', ["$scope", "$http", "$window", "$locati
                 $http.post("rides/" + ride_id + "/heartbeat", {
                     "location": coordinates
                 }).success(function (data) {
-                    $scope.distance = data.distance;
+                    $scope.distance = Math.round(data.distance);
                     setTimeout(function () {
                         $scope.heartbeat(ride_id);
                     }, 3000);
