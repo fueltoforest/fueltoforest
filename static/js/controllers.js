@@ -32,6 +32,8 @@ module.controller('RegisterController', ["$scope", "$http", "$window", "$locatio
 module.controller('HeartbeatController', ["$scope", "$http", "$window", "$location", "geolocation",
     function ($scope, $http, $window, $location, geolocation) {
 
+        $scope.distance = 0;
+
         $scope.heartbeat = function (ride_id) {
             geolocation.getLocation().then(function (data) {
                 var coordinates = [
@@ -40,7 +42,8 @@ module.controller('HeartbeatController', ["$scope", "$http", "$window", "$locati
                 ];
                 $http.post("rides/" + ride_id + "/heartbeat", {
                     "location": coordinates
-                }).success(function () {
+                }).success(function (data) {
+                    $scope.distance = data.distance;
                     setTimeout(function () {
                         $scope.heartbeat(ride_id);
                     }, 3000);
