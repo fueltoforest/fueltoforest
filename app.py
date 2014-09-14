@@ -141,13 +141,30 @@ def heartbeat(user, id):
     assert ride
     assert ride['user_id'] == user_id
 
-    db.rides.update({'_id': ObjectId(id)}, {'$set':{'current_location': location, 'last_update': datetime.utcnow()}})
-    db.ride_routes.insert({'current_location': location, 'created_at': datetime.utcnow(),
+    d = calc_ride_distance(ride_id=id)
+
+    db.rides.update({'_id': ObjectId(id)},
+                    {'$set':{'current_location': location,
+                                 "distance": d['dis'],
+                                'elapsed_seconds': d['t'],
+                                "donate": calc_donate(kms=d['dis']),
+                             'last_update': datetime.utcnow()}})
+
+    db.ride_routes.insert({'current_location': location,
+                            "distance": d['dis'],
+                            'elapsed_seconds': d['t'],
+                            "donate": calc_donate(kms=d['dis']),
+                           'created_at': datetime.utcnow(),
                            'ride_id': id})
 
+
     response = jsonify({
-        "ride_id": str(id)
+        "ride_id": str(id),
+        "distance": d['dis'],
+        'elapsed_seconds': d['t'],
+        "donate": calc_donate(kms=d['dis'])
     })
+
     response.status_code = 200
     return response
 

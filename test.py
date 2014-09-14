@@ -13,6 +13,13 @@ db.drop_collection('ride_routes')
 
 def post(url, data, status_code=200, **kwargs):
     c =  requests.post(SERVER_URL + url, data=json.dumps(data), headers = {'content-type': 'application/json'}, **kwargs)
+    print "requesting url", url, c.status_code, c.content
+    assert c.status_code == status_code
+    return c
+
+def get(url, data, status_code, **kwargs):
+    c = requests.get(SERVER_URL + url, data=json.dumps(data), headers = {'content-type': 'application/json'}, **kwargs)
+    print "requesting url", url, c.status_code, c.content
     assert c.status_code == status_code
     return c
 
@@ -23,7 +30,7 @@ post('/register', {
     })
 
 c = post('/login', {
-    'user_name': 'ybrs',
+    'email': 'aybars.badur@gmail.com',
     'password': 'foobar'
 })
 
@@ -55,3 +62,7 @@ c = post('/rides/%s/finish' % ride['ride_id'], {
 
 print c.content
 
+c == get('/rides', {
+    'token': user['token']
+}, status_code=200)
+print c.content
